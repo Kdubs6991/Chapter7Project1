@@ -1,0 +1,57 @@
+@model Dictionary<string, string>
+@{
+    ViewData["Title"] = "Contact Us";
+    
+    static bool IsPhoneNumber(string value)
+    {
+        // Remove any whitespace or special characters from the input string
+        string cleanedValue = Regex.Replace(value, @"\s|[-()]", "");
+
+        // Check if the cleaned value contains only digits and is of a certain length (e.g., 10 digits)
+        return Regex.IsMatch(cleanedValue, @"^\d{10}$");
+    }
+
+    static bool IsEmailAddress(string value)
+    {
+        try
+        {
+            var address = new System.Net.Mail.MailAddress(value);
+            return address.Address == value;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+}
+
+@section header{
+    <h1>Need To Contact Us?</h1>
+}
+<p>Listed in the table below are all the ways you can reach us!</p>
+
+<table class="table table-bordered table-striped">
+    <tbody>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.Key</td>
+            <td>
+                @if (IsPhoneNumber(item.Value))
+                {
+                    <a href="tel:@item.Value">@item.Value</a>
+                }
+                else if (IsEmailAddress(item.Value))
+                {
+                    <a href="mailto:@item.Value">@item.Value</a>
+                }
+                else
+                {
+                    @item.Value
+                }
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
